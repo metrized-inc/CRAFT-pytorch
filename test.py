@@ -42,31 +42,8 @@ def copyStateDict(state_dict):
 def str2bool(v):
     return v.lower() in ("yes", "y", "true", "t", "1")
 
-parser = argparse.ArgumentParser(description='CRAFT Text Detection')
-parser.add_argument('--trained_model', default='weights/craft_mlt_25k.pth', type=str, help='pretrained model')
-parser.add_argument('--text_threshold', default=0.7, type=float, help='text confidence threshold')
-parser.add_argument('--low_text', default=0.4, type=float, help='text low-bound score')
-parser.add_argument('--link_threshold', default=0.4, type=float, help='link confidence threshold')
-parser.add_argument('--cuda', default=True, type=str2bool, help='Use cuda for inference')
-parser.add_argument('--canvas_size', default=1280, type=int, help='image size for inference')
-parser.add_argument('--mag_ratio', default=1.5, type=float, help='image magnification ratio')
-parser.add_argument('--poly', default=False, action='store_true', help='enable polygon type')
-parser.add_argument('--show_time', default=False, action='store_true', help='show processing time')
-parser.add_argument('--test_folder', default='/data/', type=str, help='folder path to input images')
-parser.add_argument('--refine', default=False, action='store_true', help='enable link refiner')
-parser.add_argument('--refiner_model', default='weights/craft_refiner_CTW1500.pth', type=str, help='pretrained refiner model')
 
-args = parser.parse_args()
-
-
-""" For test images in a folder """
-image_list, _, _ = file_utils.get_files(args.test_folder)
-
-result_folder = './result/'
-if not os.path.isdir(result_folder):
-    os.mkdir(result_folder)
-
-def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly, refine_net=None):
+def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly, args, refine_net=None):
     t0 = time.time()
 
     # resize
@@ -98,7 +75,7 @@ def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly, r
     t1 = time.time()
 
     # Post-processing
-    boxes, polys = craft_utils.getDetBoxes(score_text, score_link, text_threshold, link_threshold, low_text, poly)
+    boxes, polys, det_scores = craft_utils.getDetBoxes(score_text, score_link, text_threshold, link_threshold, low_text, poly)
 
     # coordinate adjustment
     boxes = craft_utils.adjustResultCoordinates(boxes, ratio_w, ratio_h)
@@ -115,7 +92,7 @@ def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly, r
 
     if args.show_time : print("\ninfer/postproc time : {:.3f}/{:.3f}".format(t0, t1))
 
-    return boxes, polys, ret_score_text
+    return boxes, polys, ret_score_text, det_scores
 
 
 
