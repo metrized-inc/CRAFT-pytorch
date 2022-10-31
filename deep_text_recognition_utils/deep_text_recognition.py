@@ -36,8 +36,8 @@ def run_str(args, cropped_words_output):
     model = torch.nn.DataParallel(model).to(device)
 
     # load model
-    print('loading pretrained model from %s' % args.saved_model)
-    model.load_state_dict(torch.load(args.saved_model, map_location=device))
+    print('loading pretrained model from %s' % args.str_model)
+    model.load_state_dict(torch.load(args.str_model, map_location=device))
 
     # prepare data. two demo images from https://github.com/bgshih/crnn#run-demo
     AlignCollate_demo = AlignCollate(imgH=args.imgH, imgW=args.imgW, keep_ratio_with_pad=args.PAD)

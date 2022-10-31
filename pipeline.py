@@ -73,11 +73,11 @@ def main(args):
     # load net
     net = CRAFT() # initialize
 
-    print('Loading weights from checkpoint (' + args.trained_model + ')')
+    print('Loading weights from checkpoint (' + args.craft_model + ')')
     if args.cuda:
-        net.load_state_dict(test_net.copyStateDict(torch.load(args.trained_model)))
+        net.load_state_dict(test_net.copyStateDict(torch.load(args.craft_model)))
     else:
-        net.load_state_dict(test_net.copyStateDict(torch.load(args.trained_model, map_location='cpu')))
+        net.load_state_dict(test_net.copyStateDict(torch.load(args.craft_model, map_location='cpu')))
 
     if args.cuda:
         net = net.cuda()
@@ -141,7 +141,7 @@ if __name__ == '__main__':
 
     # CRAFT
     parser = argparse.ArgumentParser(description='CRAFT Text Detection')
-    parser.add_argument('--trained_model', default='weights/craft_mlt_25k.pth', type=str, help='pretrained model')
+    parser.add_argument('--craft_model', default='weights/craft_mlt_25k.pth', type=str, help='pretrained model')
     parser.add_argument('--input_folder', default='data/', type=str, help='folder path to input images')
     parser.add_argument('--output_folder', default='output', type=str, help='output folder')
     parser.add_argument('--text_threshold', default=0.7, type=float, help='text confidence threshold')
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     # 4 Stage Deep Scene Recognition
     parser.add_argument('--workers', type=int, help='number of data loading workers', default=4)
     parser.add_argument('--batch_size', type=int, default=192, help='input batch size')
-    parser.add_argument('--saved_model', required=True, help="path to saved_model to evaluation")
+    parser.add_argument('--str_model', required=True, help="path to STR saved model to evaluation")
     """ Data processing """
     parser.add_argument('--batch_max_length', type=int, default=25, help='maximum-label-length')
     parser.add_argument('--imgH', type=int, default=32, help='the height of the input image')
