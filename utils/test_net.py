@@ -4,30 +4,15 @@ MIT License
 """
 
 # -*- coding: utf-8 -*-
-import sys
-import os
 import time
-import argparse
-
 import torch
-import torch.nn as nn
-import torch.backends.cudnn as cudnn
-from torch.autograd import Variable
-
-from PIL import Image
-
 import cv2
-from skimage import io
 import numpy as np
-import json
-import zipfile
-
-from utils.craft import CRAFT
-import utils.imgproc as imgproc
-import utils.file_utils as file_utils
-import utils.craft_utils as craft_utils
-
+from torch.autograd import Variable
 from collections import OrderedDict
+
+import utils.imgproc as imgproc
+import utils.craft_utils as craft_utils
 
 
 def copyStateDict(state_dict):
