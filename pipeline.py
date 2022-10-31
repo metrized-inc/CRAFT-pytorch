@@ -13,13 +13,13 @@ from PIL import Image
 import cv2
 from skimage import io
 import numpy as np
-import test
 import json
 import zipfile
 import pandas as pd
 from collections import OrderedDict
 
 from utils.craft import CRAFT
+import utils.test_net as test_net
 import utils.imgproc as imgproc
 import utils.file_utils as file_utils
 import utils.craft_utils as craft_utils
@@ -41,10 +41,6 @@ def main(args):
     if not os.path.exists(craft_mask_output):
         os.makedirs(craft_mask_output)
 
-    # result_folder = 'Results'
-    # if not os.path.isdir(result_folder):
-    #     os.mkdir(result_folder)
-
 
     #CUSTOMISE START
     start = args.input_folder
@@ -64,13 +60,13 @@ def main(args):
 
 
     # load net
-    net = CRAFT()     # initialize
+    net = CRAFT() # initialize
 
     print('Loading weights from checkpoint (' + args.trained_model + ')')
     if args.cuda:
-        net.load_state_dict(test.copyStateDict(torch.load(args.trained_model)))
+        net.load_state_dict(test_net.copyStateDict(torch.load(args.trained_model)))
     else:
-        net.load_state_dict(test.copyStateDict(torch.load(args.trained_model, map_location='cpu')))
+        net.load_state_dict(test_net.copyStateDict(torch.load(args.trained_model, map_location='cpu')))
 
     if args.cuda:
         net = net.cuda()
@@ -87,11 +83,11 @@ def main(args):
         refine_net = RefineNet()
         print('Loading weights of refiner from checkpoint (' + args.refiner_model + ')')
         if args.cuda:
-            refine_net.load_state_dict(test.copyStateDict(torch.load(args.refiner_model)))
+            refine_net.load_state_dict(test_net.copyStateDict(torch.load(args.refiner_model)))
             refine_net = refine_net.cuda()
             refine_net = torch.nn.DataParallel(refine_net)
         else:
-            refine_net.load_state_dict(test.copyStateDict(torch.load(args.refiner_model, map_location='cpu')))
+            refine_net.load_state_dict(test_net.copyStateDict(torch.load(args.refiner_model, map_location='cpu')))
 
         refine_net.eval()
         args.poly = True
@@ -104,7 +100,7 @@ def main(args):
         print("Test image {:d}/{:d}: {:s}".format(k+1, len(image_list), image_path), end='\r')
         image = imgproc.loadImage(image_path)
 
-        bboxes, polys, score_text, det_scores = test.test_net(net, image, args.text_threshold, args.link_threshold, args.low_text, args.cuda, args.poly, args, refine_net)
+        bboxes, polys, score_text, det_scores = test_net.test_net(net, image, args.text_threshold, args.link_threshold, args.low_text, args.cuda, args.poly, args, refine_net)
         
         bbox_score = {}
         

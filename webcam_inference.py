@@ -13,13 +13,13 @@ from PIL import Image
 import cv2
 from skimage import io
 import numpy as np
-import test
 import json
 import zipfile
 import pandas as pd
 from collections import OrderedDict
 
 from utils.craft import CRAFT
+import utils.test_net as test_net
 import utils.imgproc as imgproc
 import utils.file_utils as file_utils
 import utils.craft_utils as craft_utils
@@ -74,9 +74,9 @@ if __name__ == '__main__':
 
     print('Loading weights from checkpoint (' + args.trained_model + ')')
     if args.cuda:
-        net.load_state_dict(test.copyStateDict(torch.load(args.trained_model)))
+        net.load_state_dict(test_net.copyStateDict(torch.load(args.trained_model)))
     else:
-        net.load_state_dict(test.copyStateDict(torch.load(args.trained_model, map_location='cpu')))
+        net.load_state_dict(test_net.copyStateDict(torch.load(args.trained_model, map_location='cpu')))
 
     if args.cuda:
         net = net.cuda()
@@ -92,11 +92,11 @@ if __name__ == '__main__':
         refine_net = RefineNet()
         print('Loading weights of refiner from checkpoint (' + args.refiner_model + ')')
         if args.cuda:
-            refine_net.load_state_dict(test.copyStateDict(torch.load(args.refiner_model)))
+            refine_net.load_state_dict(test_net.copyStateDict(torch.load(args.refiner_model)))
             refine_net = refine_net.cuda()
             refine_net = torch.nn.DataParallel(refine_net)
         else:
-            refine_net.load_state_dict(test.copyStateDict(torch.load(args.refiner_model, map_location='cpu')))
+            refine_net.load_state_dict(test_net.copyStateDict(torch.load(args.refiner_model, map_location='cpu')))
 
         refine_net.eval()
         args.poly = True
@@ -119,7 +119,7 @@ if __name__ == '__main__':
             break
         
         # Run through model
-        bboxes, polys, score_text, det_scores = test.test_net(net, frame, args.text_threshold, args.link_threshold, args.low_text, args.cuda, args.poly, args, refine_net)
+        bboxes, polys, score_text, det_scores = test_net.test_net(net, frame, args.text_threshold, args.link_threshold, args.low_text, args.cuda, args.poly, args, refine_net)
         
         for i, box in enumerate(polys):
             poly = np.array(box).astype(np.int32).reshape((-1))
