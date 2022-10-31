@@ -119,7 +119,7 @@ if __name__ == '__main__':
             break
         
         # Run through model
-        bboxes, polys, score_text, det_scores = test_net.test_net(net, frame, args.text_threshold, args.link_threshold, args.low_text, args.cuda, args.poly, args, refine_net)
+        bboxes, polys, score_text, det_scores = test_net.test_net(args, net, frame, args.text_threshold, args.link_threshold, args.low_text, args.cuda, args.poly, refine_net)
         
         for i, box in enumerate(polys):
             poly = np.array(box).astype(np.int32).reshape((-1))

@@ -30,7 +30,7 @@ def str2bool(v):
     return v.lower() in ("yes", "y", "true", "t", "1")
 
 
-def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly, args, refine_net=None):
+def test_net(args, net, image, text_threshold, link_threshold, low_text, cuda, poly, refine_net=None):
     t0 = time.time()
 
     # resize

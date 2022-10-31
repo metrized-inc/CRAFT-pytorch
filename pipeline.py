@@ -29,17 +29,31 @@ import utils.craft_utils as craft_utils
 def str2bool(v):
     return v.lower() in ("yes", "y", "true", "t", "1")
 
+def crop_images(image_folder, output_csv, cropped_words_output):
+    data = pd.read_csv(output_csv)
+
+    for image_num in range(data.shape[0]):
+        image = cv2.imread(os.path.join(image_folder, data['image_name'][image_num]))
+        image_name = data['image_name'][image_num].strip('.jpg')
+        score_bbox = data['word_bboxes'][image_num].split('),')
+        craft_utils.generate_words(image_name, score_bbox, image, cropped_words_output)
+
 
 def main(args):
     # Create folders
 
     output_dir = args.output_folder
+    output_csv = os.path.join(output_dir, 'data.csv')
+    
     craft_result_output = os.path.join(output_dir, 'results')
     craft_mask_output = os.path.join(output_dir, 'masks')
+    cropped_words_output = os.path.join(output_dir, 'cropped_words')
     if not os.path.exists(craft_result_output):
         os.makedirs(craft_result_output)
     if not os.path.exists(craft_mask_output):
         os.makedirs(craft_mask_output)
+    if not os.path.exists(cropped_words_output):
+        os.makedirs(cropped_words_output)
 
 
     #CUSTOMISE START
@@ -100,7 +114,7 @@ def main(args):
         print("Test image {:d}/{:d}: {:s}".format(k+1, len(image_list), image_path), end='\r')
         image = imgproc.loadImage(image_path)
 
-        bboxes, polys, score_text, det_scores = test_net.test_net(net, image, args.text_threshold, args.link_threshold, args.low_text, args.cuda, args.poly, args, refine_net)
+        bboxes, polys, score_text, det_scores = test_net.test_net(args, net, image, args.text_threshold, args.link_threshold, args.low_text, args.cuda, args.poly, refine_net)
         
         bbox_score = {}
         
@@ -117,9 +131,12 @@ def main(args):
 
         file_utils.saveResult(image_path, image[:,:,::-1], polys, dirname = craft_result_output)
 
-
-    data.to_csv(os.path.join(output_dir, 'data.csv'), sep = ',', na_rep='Unknown')
+    data.to_csv(output_csv, sep = ',', na_rep='Unknown')
     print("elapsed time : {}s".format(time.time() - t))
+
+
+    # Crop images 
+    crop_images(start, output_csv, cropped_words_output)
 
 
 if __name__ == '__main__':
