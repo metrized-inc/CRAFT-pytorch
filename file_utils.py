@@ -46,11 +46,8 @@ def saveResult(img_file, img, boxes, dirname='./result/', verticals=None, texts=
         filename, file_ext = os.path.splitext(os.path.basename(img_file))
 
         # result directory
-        res_file = dirname + "res_" + filename + '.txt'
-        res_img_file = dirname + "res_" + filename + '.jpg'
-
-        if not os.path.isdir(dirname):
-            os.mkdir(dirname)
+        res_file = dirname + r"\res_" + filename + '.txt'
+        res_img_file = dirname + r"\res_" + filename + '.jpg'
 
         with open(res_file, 'w') as f:
             for i, box in enumerate(boxes):
