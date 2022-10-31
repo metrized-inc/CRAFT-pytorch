@@ -11,8 +11,8 @@ import numpy as np
 from torch.autograd import Variable
 from collections import OrderedDict
 
-import utils.imgproc as imgproc
-import utils.craft_utils as craft_utils
+import craft_utils.imgproc as imgproc
+import craft_utils.craft_model_utils as craft_utils
 
 
 def copyStateDict(state_dict):

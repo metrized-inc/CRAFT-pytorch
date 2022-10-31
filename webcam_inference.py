@@ -18,12 +18,11 @@ import zipfile
 import pandas as pd
 from collections import OrderedDict
 
-from utils.craft import CRAFT
-import utils.test_net as test_net
-import utils.imgproc as imgproc
-import utils.file_utils as file_utils
-import utils.craft_utils as craft_utils
-
+from craft_utils.craft import CRAFT
+import craft_utils.test_net as test_net
+import craft_utils.imgproc as imgproc
+import craft_utils.file_utils as file_utils
+import craft_utils.craft_model_utils as craft_utils
 
 
 def str2bool(v):
@@ -51,7 +50,7 @@ def main(args):
     # LinkRefiner
     refine_net = None
     if args.refine:
-        from utils.refinenet import RefineNet
+        from craft_utils.refinenet import RefineNet
         refine_net = RefineNet()
         print('Loading weights of refiner from checkpoint (' + args.refiner_model + ')')
         if args.cuda:
