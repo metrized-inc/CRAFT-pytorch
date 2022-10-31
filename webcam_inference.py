@@ -13,19 +13,18 @@ from PIL import Image
 import cv2
 from skimage import io
 import numpy as np
-import craft_utils
 import test
-import imgproc
-import file_utils
 import json
 import zipfile
 import pandas as pd
-
-from craft import CRAFT
-
 from collections import OrderedDict
 
-# from google.colab.patches import cv2_imshow
+from utils.craft import CRAFT
+import utils.imgproc as imgproc
+import utils.file_utils as file_utils
+import utils.craft_utils as craft_utils
+
+
 
 def str2bool(v):
     return v.lower() in ("yes", "y", "true", "t", "1")
@@ -89,7 +88,7 @@ if __name__ == '__main__':
     # LinkRefiner
     refine_net = None
     if args.refine:
-        from refinenet import RefineNet
+        from utils.refinenet import RefineNet
         refine_net = RefineNet()
         print('Loading weights of refiner from checkpoint (' + args.refiner_model + ')')
         if args.cuda:
