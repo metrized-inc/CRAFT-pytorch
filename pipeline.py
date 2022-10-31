@@ -41,7 +41,6 @@ def crop_images(image_folder, output_csv, cropped_words_output):
 
 def main(args):
     # Create folders
-
     output_dir = args.output_folder
     output_csv = os.path.join(output_dir, 'data.csv')
     
@@ -56,15 +55,12 @@ def main(args):
         os.makedirs(cropped_words_output)
 
 
-    #CUSTOMISE START
+    # CUSTOMISE START
     start = args.input_folder
 
     """ For test images in a folder """
     image_list, _, _ = file_utils.get_files(start)
-
     image_names = []
-    image_paths = []
-
     for num in range(len(image_list)):
         image_names.append(os.path.relpath(image_list[num], start))
 
@@ -133,7 +129,6 @@ def main(args):
 
     data.to_csv(output_csv, sep = ',', na_rep='Unknown')
     print("elapsed time : {}s".format(time.time() - t))
-
 
     # Crop images 
     crop_images(start, output_csv, cropped_words_output)
