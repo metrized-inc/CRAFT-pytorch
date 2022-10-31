@@ -8,7 +8,7 @@ Clova AI Research, NAVER Corp.
 ## UPDATED by Ho Jin
 This repo has been modified and updated to incorporate a 4 stage deep Scene Text Recognition (STR) model in a single pipeline. CRAFT is used to detect text in images and output its bounding box. The bounding boxes are used to crop the text from the raw image. The 4 stage STR model uses the cropped words and outputs the letters/numbers/words in the image.
 
-[Link to 4 stage deep Scene Text Recognition (STR) Repo.](https://github.com/metrized-inc/deep-text-recognition-benchmark)
+Download pretrained STR model here: [Link to 4 stage deep Scene Text Recognition (STR) Repo.](https://github.com/metrized-inc/deep-text-recognition-benchmark)
 
 ## To run
 ```python pipeline.py --craft_model <path/to/craft_model> --input_folder <path/to/raw/input_images> --Transformation None --FeatureExtraction VGG --SequenceModeling BiLSTM --Prediction CTC --str_model <path/to/str_model>```
