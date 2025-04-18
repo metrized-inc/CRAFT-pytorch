@@ -1,5 +1,5 @@
 import click
-from metrized_text.processor import TextDetector
+from .processor import TextDetector
 
 
 @click.command()

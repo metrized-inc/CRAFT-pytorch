@@ -5,12 +5,11 @@ import cv2
 import torch
 import numpy as np
 from torch.autograd import Variable
-from metrized_text.craft import CRAFT
-
-import craft_utils
-import imgproc
-import file_utils
+from .craft import CRAFT
+from .craft_utils import getDetBoxes, adjustResultCoordinates
+from .file_utils import saveResult
 from .utils import copy_state_dict
+from .imgproc import loadImage, resize_aspect_ratio, normalizeMeanVariance
 
 
 class TextDetector:
@@ -71,8 +70,8 @@ class TextDetector:
             self.poly = True
 
     def test_image(self, image_path):
-        image = imgproc.loadImage(str(image_path))
-        img_resized, target_ratio, _ = imgproc.resize_aspect_ratio(
+        image = loadImage(str(image_path))
+        img_resized, target_ratio, _ = resize_aspect_ratio(
             image,
             self.canvas_size,
             interpolation=cv2.INTER_LINEAR,
@@ -80,7 +79,7 @@ class TextDetector:
         )
         ratio_h = ratio_w = 1 / target_ratio
 
-        x = imgproc.normalizeMeanVariance(img_resized)
+        x = normalizeMeanVariance(img_resized)
         x = torch.from_numpy(x).permute(2, 0, 1).unsqueeze(0).to(self.device)
 
         with torch.no_grad():
@@ -92,7 +91,7 @@ class TextDetector:
                 y_refiner = self.refine_net(y, feature)
                 score_link = y_refiner[0, :, :, 0].cpu().numpy()
 
-        boxes, polys, scores = craft_utils.getDetBoxes(
+        boxes, polys, scores = getDetBoxes(
             score_text,
             score_link,
             self.text_threshold,
@@ -101,14 +100,16 @@ class TextDetector:
             self.poly,
         )
 
-        boxes = craft_utils.adjustResultCoordinates(boxes, ratio_w, ratio_h)
-        polys = craft_utils.adjustResultCoordinates(polys, ratio_w, ratio_h)
+        boxes = adjustResultCoordinates(boxes, ratio_w, ratio_h)
+        polys = adjustResultCoordinates(polys, ratio_w, ratio_h)
         polys = [p if p is not None else b for p, b in zip(polys, boxes)]
 
         return image, polys, score_text
 
     def process_folder(self):
-        image_list, _, _ = file_utils.get_files(self.test_folder)
+        image_list = [
+            pth for pth in Path(self.test_folder).rglob("*.png")
+        ]  # Get all PNGS
         start = time.time()
 
         for idx, image_path in enumerate(image_list):
@@ -117,21 +118,19 @@ class TextDetector:
 
             out_path = self.result_folder / f"res_{Path(image_path).stem}_mask.jpg"
             cv2.imwrite(str(out_path), score_text)
-            file_utils.saveResult(
-                image_path, image[:, :, ::-1], polys, dirname=self.result_folder
-            )
+            saveResult(image_path, image[:, :, ::-1], polys, dirname=self.result_folder)
 
         print(f"\nTotal elapsed time: {time.time() - start:.2f}s")
 
     def detect_text_probability(self, image_path) -> float:
-        image = imgproc.loadImage(str(image_path))
-        img_resized, _, _ = imgproc.resize_aspect_ratio(
+        image = loadImage(str(image_path))
+        img_resized, _, _ = resize_aspect_ratio(
             image,
             self.canvas_size,
             interpolation=cv2.INTER_LINEAR,
             mag_ratio=self.mag_ratio,
         )
-        x = imgproc.normalizeMeanVariance(img_resized)
+        x = normalizeMeanVariance(img_resized)
         x = torch.from_numpy(x).permute(2, 0, 1).unsqueeze(0).to(self.device)
 
         with torch.no_grad():
