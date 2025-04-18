@@ -5,7 +5,7 @@ import cv2
 import torch
 import numpy as np
 from torch.autograd import Variable
-from craft import CRAFT
+from metrized_text.craft import CRAFT
 
 import craft_utils
 import imgproc
