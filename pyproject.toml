@@ -1,13 +1,31 @@
 [project]
-name = "craft-pytorch"
+name = "metrized_text"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "click>=8.1.8",
     "numpy<2",
     "opencv-python>=4.11.0.86",
     "pillow>=11.2.1",
+    "pip>=25.0.1",
     "scikit-image>=0.25.2",
     "torchvision==0.12.0",
 ]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+metrized-text = "metrized_text.cli:main"
+
+[project.optional-dependencies]
+dev = ["pip>=25.0.1"]

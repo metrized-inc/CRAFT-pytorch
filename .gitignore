@@ -1,8 +1,31 @@
-*.pyc
-*.swp
-*.pkl
+# Python Artifacts
+__pycache__/
+*.py[cod]
+
+# Virtual Environment
+venv/
+.venv/
+# Test Caches
+.pytest_cache/
+
+# Build Artifacts
+*.egg-info/
+build/
+data/
+output/
+result/
+dist/
+
+# Editor settings
+.vscode
+
+# Linter
+.ruff_cache
+
+# Files
+*.png
+*.bmp
+*.jpg
+*.ppm
+*.spec
 *.pth
-result*
-weights*
-data
-content
